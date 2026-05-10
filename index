@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MCAS Flare Guide">
+  <meta name="theme-color" content="#1A7A8A">
+  <meta name="description" content="Personalized MCAS flare recognition and response guide">
+  <title>MCAS Flare Guide</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f3f4f6;
+      --color-background-tertiary: #f9fafb;
+      --color-text-primary: #111827;
+      --color-text-secondary: #6b7280;
+      --color-border-tertiary: rgba(0,0,0,0.08);
+      --color-border-secondary: rgba(0,0,0,0.15);
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-background-primary: #1c1c1e;
+        --color-background-secondary: #2c2c2e;
+        --color-background-tertiary: #242426;
+        --color-text-primary: #f2f2f7;
+        --color-text-secondary: #aeaeb2;
+        --color-border-tertiary: rgba(255,255,255,0.08);
+        --color-border-secondary: rgba(255,255,255,0.15);
+      }
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary);display:flex;justify-content:center}
+    .app{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;background:var(--color-background-primary);position:relative;overflow:hidden}
+    .screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+    .screen.active{display:flex}
+    .screen-scroll{flex:1;overflow-y:auto;padding:1.25rem;-webkit-overflow-scrolling:touch}
+    .top-bar{display:flex;align-items:center;gap:10px;padding:0.75rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0}
+    .top-bar h1{font-size:15px;font-weight:500;flex:1}
+    .back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:22px;padding:4px 6px;border-radius:6px;line-height:1;display:flex;align-items:center}
+    .back-btn:hover{background:var(--color-background-secondary)}
+    h2{font-size:18px;font-weight:500;margin-bottom:0.5rem}
+    h3{font-size:15px;font-weight:500;margin-bottom:0.5rem}
+    p{font-size:14px;color:var(--color-text-secondary);line-height:1.6}
+    .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
+    .card-amber{border-left:3px solid #854F0B;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+    .card-red{border-left:3px solid #A32D2D;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;cursor:pointer;font-family:var(--font-sans);-webkit-tap-highlight-color:transparent}
+    .btn:hover{background:var(--color-background-secondary)}
+    .btn:active{transform:scale(0.98)}
+    .btn-primary{background:#1A7A8A;color:white;border-color:#1A7A8A}
+    .btn-primary:hover{background:#155f6b}
+    .btn-full{width:100%;justify-content:center}
+    .btn-lg{padding:14px 20px;font-size:15px;border-radius:var(--border-radius-lg)}
+    .btn-flare{background:#EAF3DE;color:#27500A;border:1.5px solid #639922;font-size:16px;font-weight:500;padding:16px 20px;border-radius:var(--border-radius-lg)}
+    .btn-flare:hover{background:#C0DD97}
+    .btn-ghost{background:none;border:none;color:var(--color-text-secondary);font-size:13px;cursor:pointer;font-family:var(--font-sans);padding:8px 0;display:inline-flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent}
+    .section-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin:1.25rem 0 0.5rem}
+    .field{margin-bottom:1rem}
+    .field label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px}
+    .field input,.field textarea,.field select{width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:14px;font-family:var(--font-sans);background:var(--color-background-primary);color:var(--color-text-primary);-webkit-appearance:none}
+    .field textarea{min-height:72px;resize:vertical}
+    .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#1A7A8A;box-shadow:0 0 0 2px rgba(26,122,138,0.15)}
+    .progress-bar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.5rem;flex-shrink:0}
+    .progress-fill{height:100%;background:#1A7A8A;border-radius:2px;transition:width 0.3s}
+    .tier-nav{display:flex;gap:6px;margin-bottom:1rem;flex-shrink:0;padding:0 1.25rem}
+    .tier-btn{flex:1;padding:8px 4px;font-size:11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-family:var(--font-sans);text-align:center;line-height:1.3;-webkit-tap-highlight-color:transparent}
+    .tier-btn.active-t1{background:#EAF3DE;color:#27500A;border-color:#639922;font-weight:500}
+    .tier-btn.active-t2{background:#FAEEDA;color:#633806;border-color:#BA7517;font-weight:500}
+    .tier-btn.active-t3{background:#FAECE7;color:#712B13;border-color:#D85A30;font-weight:500}
+    .tier-btn.active-t4{background:#FCEBEB;color:#791F1F;border-color:#E24B4A;font-weight:500}
+    .tier-header{padding:12px 16px;border-radius:var(--border-radius-md);margin-bottom:1rem}
+    .t1-header{background:#EAF3DE;color:#27500A}
+    .t2-header{background:#FAEEDA;color:#633806}
+    .t3-header{background:#FAECE7;color:#712B13}
+    .t4-header{background:#FCEBEB;color:#791F1F}
+    .tier-header h2{color:inherit;font-size:16px;margin:0}
+    .tier-header p{color:inherit;opacity:0.8;font-size:13px;margin-top:4px}
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:14px;line-height:1.5}
+    .check-item:last-child{border-bottom:none}
+    .check-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+    .dot-green{background:#639922}
+    .dot-amber{background:#BA7517}
+    .dot-coral{background:#D85A30}
+    .dot-red{background:#E24B4A}
+    .escalate-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 16px;border-radius:var(--border-radius-md);border:0.5px solid;background:none;cursor:pointer;font-size:14px;font-family:var(--font-sans);margin-top:1rem;line-height:1.4;text-align:left;gap:8px;-webkit-tap-highlight-color:transparent}
+    .esc-t2{border-color:#BA7517;color:#633806}
+    .esc-t2:hover{background:#FAEEDA}
+    .esc-t3{border-color:#D85A30;color:#712B13}
+    .esc-t3:hover{background:#FAECE7}
+    .esc-t4{border-color:#E24B4A;color:#791F1F}
+    .esc-t4:hover{background:#FCEBEB}
+    .emer-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:14px}
+    .emer-item:last-child{border-bottom:none}
+    .emer-label{color:var(--color-text-secondary);font-size:12px;min-width:90px}
+    .complete-chip{font-size:11px;padding:2px 8px;border-radius:10px}
+    .chip-done{background:#EAF3DE;color:#3B6D11}
+    .chip-todo{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+    .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+    .stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
+    .stat-num{font-size:22px;font-weight:500}
+    .stat-lbl{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+    .nav-tabs{display:flex;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+    .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;font-size:11px;color:var(--color-text-secondary);cursor:pointer;border:none;background:none;font-family:var(--font-sans);-webkit-tap-highlight-color:transparent}
+    .nav-tab.active{color:#1A7A8A}
+    .nav-tab i{font-size:20px}
+    .lock-note{font-size:12px;color:#854F0B;background:#FAEEDA;border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+    .log-entry{padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+    .log-entry:last-child{border-bottom:none}
+    .sev-bar{display:flex;gap:3px;margin-top:6px}
+    .sev-dot{width:16px;height:6px;border-radius:3px;background:var(--color-border-tertiary)}
+    .sev-dot.filled{background:#1A7A8A}
+    .warn-box{background:#FCEBEB;border:0.5px solid #F7C1C1;border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:1rem;font-size:13px;color:#791F1F}
+    .info-box{background:#E1F5EE;border:0.5px solid #9FE1CB;border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:1rem;font-size:13px;color:#085041}
+    .divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0}
+    .provider-field{border:0.5px dashed #BA7517;border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:8px}
+    .provider-field label{font-size:12px;color:#854F0B;display:block;margin-bottom:2px}
+    .provider-field input{border:none;background:none;padding:4px 0;font-size:14px;width:100%;color:var(--color-text-primary);font-family:var(--font-sans)}
+    .provider-field input:focus{outline:none}
+    .ctx-btn.selected{border-color:#1A7A8A;background:#E1F5EE;color:#085041}
+    .pill{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+    .pill-teal{background:#E1F5EE;color:#0F6E56}
+    .pill-green{background:#EAF3DE;color:#3B6D11}
+    .pill-amber{background:#FAEEDA;color:#854F0B}
+    .pill-coral{background:#FAECE7;color:#993C1D}
+    .pill-red{background:#FCEBEB;color:#A32D2D}
+    .mline{font-size:13px;margin-bottom:8px;line-height:1.5}
+    .mline-label{color:var(--color-text-secondary)}
+    .demo-bar{background:#E1F5EE;border-bottom:0.5px solid #9FE1CB;padding:6px 1.25rem;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#085041;flex-shrink:0}
+    .ob-footer{padding:1rem 1.25rem;border-top:0.5px solid var(--color-border-tertiary);display:flex;gap:10px;flex-shrink:0;background:var(--color-background-primary)}
+    .flare-footer{padding:0.75rem 1.25rem;border-top:0.5px solid var(--color-border-tertiary);display:flex;gap:8px;flex-shrink:0;background:var(--color-background-primary)}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+<div id="demo-bar" class="demo-bar" style="display:none">
+  <span><i class="ti ti-presentation" style="font-size:14px;vertical-align:-2px" aria-hidden="true"></i> Demo mode — your data is preserved</span>
+  <button class="btn-ghost" style="font-size:12px;color:#085041" onclick="exitDemo()">Exit demo</button>
+</div>
+
+<div class="top-bar" id="top-bar" style="display:none">
+  <button class="back-btn" onclick="goBack()" aria-label="Go back"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+  <h1 id="top-title">MCAS Flare Guide</h1>
+</div>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="screen-scroll" style="display:flex;flex-direction:column;justify-content:center;min-height:100%">
+    <div style="padding:1rem 0">
+      <div style="width:48px;height:48px;background:#E1F5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem">
+        <i class="ti ti-heart" style="font-size:24px;color:#0F6E56" aria-hidden="true"></i>
+      </div>
+      <h2 style="font-size:22px;margin-bottom:0.5rem">MCAS Flare Guide</h2>
+      <p style="margin-bottom:2rem">A personalized response guide for mast cell activation syndrome. Fill in what you can — bring it to your appointment to complete the rest with your provider.</p>
+      <div class="section-label" style="margin-top:0">I am</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem">
+        <button class="btn btn-full ctx-btn" id="ctx-adult" onclick="setContext('adult')" style="padding:14px;flex-direction:column;gap:6px;border-radius:var(--border-radius-lg)">
+          <i class="ti ti-user" style="font-size:20px" aria-hidden="true"></i>
+          <span style="font-size:13px">An adult patient</span>
+        </button>
+        <button class="btn btn-full ctx-btn" id="ctx-care" onclick="setContext('caregiver')" style="padding:14px;flex-direction:column;gap:6px;border-radius:var(--border-radius-lg)">
+          <i class="ti ti-users" style="font-size:20px" aria-hidden="true"></i>
+          <span style="font-size:13px">A caregiver / parent</span>
+        </button>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="startOnboarding()">Begin setup <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      <button class="btn-ghost btn-full" onclick="goHome()" style="justify-content:center;margin-top:10px">Already set up — go to my guide <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING 1 -->
+<div class="screen" id="s-ob1">
+  <div style="padding:1.25rem 1.25rem 0;flex-shrink:0">
+    <div class="progress-bar"><div class="progress-fill" style="width:20%"></div></div>
+    <div class="section-label" style="margin-top:0">Step 1 of 5 — Early warning signals</div>
+    <h2 id="ob1-title">Your pre-flare pattern</h2>
+    <p id="ob1-sub" style="margin-bottom:1rem">These are the signs your body gives before a full flare. Learning your personal pattern is one of the most powerful things you can do.</p>
+  </div>
+  <div class="screen-scroll">
+    <div class="field"><label id="lb-earliest">My earliest warning signs are usually</label><textarea id="f-earliest" rows="3" placeholder="e.g. mild flushing, brain fog arriving, sense of unease, heart rate rising..."></textarea></div>
+    <div class="field"><label id="lb-canary">My single most reliable first signal</label><input type="text" id="f-canary" placeholder="e.g. sudden fatigue that feels different from regular tiredness"></div>
+    <div class="field"><label id="lb-context">I notice these signals most often when</label><input type="text" id="f-context" placeholder="e.g. afternoon, before period, after fragrance exposure, after stress"></div>
+    <div class="field"><label id="lb-firstdo">When I notice these signals, I first</label><input type="text" id="f-firstdo" placeholder="e.g. take antihistamine, remove myself from the environment, lie down"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn" onclick="showScreen('s-welcome')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <button class="btn btn-primary" style="flex:1" onclick="saveOb1()">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<!-- ONBOARDING 2 -->
+<div class="screen" id="s-ob2">
+  <div style="padding:1.25rem 1.25rem 0;flex-shrink:0">
+    <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+    <div class="section-label" style="margin-top:0">Step 2 of 5 — Trigger map</div>
+    <h2>Your triggers</h2>
+    <p style="margin-bottom:1rem">List confirmed and suspected triggers. Goal: pattern recognition, not elimination.</p>
+  </div>
+  <div class="screen-scroll">
+    <div class="field"><label>Food / ingested — confirmed</label><textarea id="f-food-c" rows="2" placeholder="e.g. aged cheese, leftover meals, red wine, spinach..."></textarea></div>
+    <div class="field"><label>Food / ingested — suspected</label><textarea id="f-food-s" rows="2" placeholder="Foods you think may contribute but aren't certain about..."></textarea></div>
+    <div class="field"><label>Chemical / environmental</label><textarea id="f-chem" rows="2" placeholder="e.g. fragrances, cleaning products, mold, new materials, exhaust..."></textarea></div>
+    <div class="field"><label>Physical triggers</label><input type="text" id="f-phys" placeholder="e.g. heat, cold, exercise, pressure, sun exposure..."></div>
+    <div class="field"><label>Biological / hormonal</label><input type="text" id="f-bio" placeholder="e.g. before period, infections, sleep deprivation..."></div>
+    <div class="field"><label>Stress / autonomic</label><input type="text" id="f-stress" placeholder="e.g. anxiety, postural changes, emotional stress..."></div>
+    <div class="field"><label>My highest-load combination</label><textarea id="f-stack" rows="2" placeholder="e.g. poor sleep + fragrance exposure + before period = almost always flare"></textarea></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn" onclick="showScreen('s-ob1');loadOb1()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <button class="btn btn-primary" style="flex:1" onclick="saveOb2()">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<!-- ONBOARDING 3 -->
+<div class="screen" id="s-ob3">
+  <div style="padding:1.25rem 1.25rem 0;flex-shrink:0">
+    <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+    <div class="section-label" style="margin-top:0">Step 3 of 5 — Medications</div>
+    <h2>Mild and moderate flare</h2>
+    <p style="margin-bottom:1rem">Fill in what you know. Your provider will complete doses and confirm the plan.</p>
+  </div>
+  <div class="screen-scroll">
+    <div class="section-label" style="margin-top:0">My Tier 1 warning signs</div>
+    <div class="field"><textarea id="f-t1-signs" rows="2" placeholder="What does a mild flare feel like for you specifically?"></textarea></div>
+    <div class="section-label">Tier 1 medications</div>
+    <div class="lock-note"><i class="ti ti-lock" style="font-size:14px" aria-hidden="true"></i> Doses are completed with your provider at your appointment</div>
+    <div class="provider-field"><label>Medication 1 / dose</label><input type="text" id="f-t1-m1" placeholder="e.g. cetirizine — dose to be confirmed with provider"></div>
+    <div class="provider-field"><label>Medication 2 / dose</label><input type="text" id="f-t1-m2" placeholder="e.g. famotidine — dose to be confirmed with provider"></div>
+    <div class="field"><label>Non-medication steps that help me at Tier 1</label><input type="text" id="f-t1-other" placeholder="e.g. cool environment, lie down, remove from trigger, hydrate"></div>
+    <div class="section-label">My Tier 2 warning signs</div>
+    <div class="field"><textarea id="f-t2-signs" rows="2" placeholder="What does a moderate flare feel like for you specifically?"></textarea></div>
+    <div class="section-label">Tier 2 medications</div>
+    <div class="provider-field"><label>Rescue antihistamine / dose / max doses per day</label><input type="text" id="f-t2-m1" placeholder="Complete with provider"></div>
+    <div class="provider-field"><label>Oral steroid if prescribed / dose / when to use</label><input type="text" id="f-t2-m2" placeholder="Complete with provider"></div>
+    <div class="field"><label>My personal escalation signal to Tier 3</label><input type="text" id="f-t2-esc" placeholder="The specific sign that tells me I need to escalate"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn" onclick="showScreen('s-ob2');loadOb2()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <button class="btn btn-primary" style="flex:1" onclick="saveOb3()">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<!-- ONBOARDING 4 -->
+<div class="screen" id="s-ob4">
+  <div style="padding:1.25rem 1.25rem 0;flex-shrink:0">
+    <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+    <div class="section-label" style="margin-top:0">Step 4 of 5 — Emergency information</div>
+    <h2>Severe flare and emergency</h2>
+    <p style="margin-bottom:1rem">Fill in everything you can. Your provider will confirm the clinical details.</p>
+  </div>
+  <div class="screen-scroll">
+    <div class="section-label" style="margin-top:0">Epinephrine auto-injector</div>
+    <div class="provider-field"><label>Device name and dose</label><input type="text" id="f-epi-device" placeholder="e.g. EpiPen 0.3mg — confirm with provider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem">
+      <div class="field"><label>Where I carry it</label><input type="text" id="f-epi-loc" placeholder="e.g. purse, backpack"></div>
+      <div class="field"><label>Expiration date</label><input type="text" id="f-epi-exp" placeholder="MM/YYYY"></div>
+    </div>
+    <div class="field"><label>Second device location</label><input type="text" id="f-epi-loc2" placeholder="e.g. at home, at school nurse, at work"></div>
+    <div class="section-label">Emergency contacts</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div class="field"><label>Contact 1 name</label><input type="text" id="f-ec1-name" placeholder="Name"></div>
+      <div class="field"><label>Phone</label><input type="tel" id="f-ec1-phone" placeholder="Phone number"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem">
+      <div class="field"><label>Contact 2 name</label><input type="text" id="f-ec2-name" placeholder="Name"></div>
+      <div class="field"><label>Phone</label><input type="tel" id="f-ec2-phone" placeholder="Phone number"></div>
+    </div>
+    <div class="field"><label>Preferred hospital / ER</label><input type="text" id="f-er" placeholder="Hospital name and address"></div>
+    <div class="field"><label>Important notes for ER providers</label><textarea id="f-er-notes" rows="2" placeholder="Allergies, other conditions, medications that affect treatment..."></textarea></div>
+    <div class="field"><label id="lb-name">My name</label><input type="text" id="f-name" placeholder="Your name"></div>
+    <div class="field"><label id="lb-dob">Date of birth</label><input type="text" id="f-dob" placeholder="MM/DD/YYYY"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn" onclick="showScreen('s-ob3');loadOb3()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <button class="btn btn-primary" style="flex:1" onclick="saveOb4()">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<!-- ONBOARDING 5 -->
+<div class="screen" id="s-ob5">
+  <div class="screen-scroll" style="display:flex;flex-direction:column;justify-content:center;text-align:center;min-height:100%">
+    <div style="padding:1rem 0">
+      <div style="width:56px;height:56px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <i class="ti ti-check" style="font-size:28px;color:#3B6D11" aria-hidden="true"></i>
+      </div>
+      <h2 style="margin-bottom:0.5rem">You're set up</h2>
+      <p style="margin-bottom:2rem">Bring this to your next appointment to complete the medication doses with your provider. Your guide is ready to use now.</p>
+      <div class="card card-amber" style="text-align:left;margin-bottom:1.5rem">
+        <h3 style="color:#854F0B;margin-bottom:4px;font-size:14px">At your appointment</h3>
+        <p style="font-size:13px">Show your provider the "Complete with provider" section. They will fill in your specific medication doses, confirm your rescue protocol, and verify your epinephrine details.</p>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="goHome()">Go to my guide <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="s-home">
+  <div class="screen-scroll">
+    <div style="padding:0.25rem 0 1rem">
+      <p id="home-greeting" style="font-size:13px;color:var(--color-text-secondary);margin-bottom:0.25rem"></p>
+      <h2 id="home-name" style="font-size:20px;margin-bottom:1.25rem">My MCAS guide</h2>
+      <button class="btn btn-flare btn-full btn-lg" style="margin-bottom:1rem" onclick="showScreen('s-flare');setFlareTab('t1')">
+        <i class="ti ti-heart-rate-monitor" style="font-size:20px" aria-hidden="true"></i> I am having a flare
+      </button>
+      <div class="home-grid">
+        <div class="stat-card"><div class="stat-num" id="sc-pct">—</div><div class="stat-lbl">setup complete</div></div>
+        <div class="stat-card"><div class="stat-num" id="sc-logcount">0</div><div class="stat-lbl">flare log entries</div></div>
+      </div>
+      <div id="provider-banner" class="card card-amber" style="cursor:pointer" onclick="showScreen('s-provider');loadProvider()">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><h3 style="color:#854F0B;font-size:14px;margin-bottom:2px">Complete with provider</h3><p style="font-size:12px">Medication doses need to be confirmed at your appointment</p></div>
+          <i class="ti ti-arrow-right" style="color:#854F0B;flex-shrink:0" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="section-label">My protocol</div>
+      <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showSection('signals')"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-radar-2" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Pre-flare signals</span></div><span class="complete-chip" id="chip-signals">—</span></div></div>
+      <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showSection('triggers')"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-flame" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Trigger map</span></div><span class="complete-chip" id="chip-triggers">—</span></div></div>
+      <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-flare');setFlareTab('t1')"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-stairs-up" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Tier response guide</span></div><span class="pill pill-teal" style="font-size:11px">Tiers 1–4</span></div></div>
+      <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showSection('emergency')"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-first-aid-kit" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Emergency information</span></div><span class="complete-chip" id="chip-emer">—</span></div></div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goHome()"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></button>
+    <button class="nav-tab" onclick="showScreen('s-flare');setFlareTab('t1')"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i><span>Flare</span></button>
+    <button class="nav-tab" onclick="showScreen('s-log')"><i class="ti ti-notebook" aria-hidden="true"></i><span>Log</span></button>
+    <button class="nav-tab" onclick="showScreen('s-settings')"><i class="ti ti-settings" aria-hidden="true"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<!-- FLARE -->
+<div class="screen" id="s-flare">
+  <div class="tier-nav" role="tablist">
+    <button class="tier-btn" onclick="setFlareTab('t1')" id="tb-t1">Tier 1<br>Mild</button>
+    <button class="tier-btn" onclick="setFlareTab('t2')" id="tb-t2">Tier 2<br>Moderate</button>
+    <button class="tier-btn" onclick="setFlareTab('t3')" id="tb-t3">Tier 3<br>Severe</button>
+    <button class="tier-btn" onclick="setFlareTab('t4')" id="tb-t4">Tier 4<br>Anaphylaxis</button>
+  </div>
+  <div class="screen-scroll" id="flare-content" style="padding:0 1.25rem 1rem"></div>
+  <div class="flare-footer">
+    <button class="btn" style="flex:1;font-size:13px" onclick="showScreen('s-log-add');prefillLogDate()"><i class="ti ti-notebook" aria-hidden="true"></i> Log flare</button>
+    <button class="btn" style="flex:1;font-size:13px" onclick="goHome()"><i class="ti ti-home" aria-hidden="true"></i> Home</button>
+  </div>
+</div>
+
+<!-- SECTION VIEW -->
+<div class="screen" id="s-section">
+  <div class="screen-scroll" id="section-content"></div>
+  <div class="ob-footer">
+    <button class="btn btn-full" onclick="editSection()"><i class="ti ti-edit" aria-hidden="true"></i> Edit this section</button>
+  </div>
+</div>
+
+<!-- PROVIDER -->
+<div class="screen" id="s-provider">
+  <div class="screen-scroll">
+    <div class="info-box" style="margin-bottom:1.25rem"><i class="ti ti-stethoscope" aria-hidden="true"></i> Provider mode — complete these fields at the appointment</div>
+    <div class="section-label" style="margin-top:0">Tier 1 medications</div>
+    <div class="provider-field"><label>Medication 1 — name, dose, timing</label><input type="text" id="pf-t1-m1" placeholder="e.g. Cetirizine 10mg twice daily"></div>
+    <div class="provider-field"><label>Medication 2 — name, dose, timing</label><input type="text" id="pf-t1-m2" placeholder="e.g. Famotidine 40mg twice daily"></div>
+    <div class="provider-field"><label>Escalation threshold</label><input type="text" id="pf-t1-thresh" placeholder="e.g. if not improving in 30 minutes, move to Tier 2"></div>
+    <div class="section-label">Tier 2 medications</div>
+    <div class="provider-field"><label>Rescue H1 — name, dose, max per day</label><input type="text" id="pf-t2-m1" placeholder="e.g. Hydroxyzine 25mg, max 4 doses/day"></div>
+    <div class="provider-field"><label>Oral steroid if prescribed — name, dose, when</label><input type="text" id="pf-t2-m2" placeholder="e.g. Prednisone 20mg x 3 days for moderate rescue"></div>
+    <div class="section-label">Epinephrine</div>
+    <div class="provider-field"><label>Device / dose</label><input type="text" id="pf-epi" placeholder="e.g. EpiPen 0.3mg"></div>
+    <div class="provider-field"><label>Additional clinical notes</label><input type="text" id="pf-notes" placeholder="Any additional protocol notes"></div>
+    <div class="section-label">Completed by</div>
+    <div class="provider-field"><label>Provider name and date</label><input type="text" id="pf-provider" placeholder="Dr. ___ — date completed"></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn btn-primary btn-full" onclick="saveProvider()"><i class="ti ti-check" aria-hidden="true"></i> Save and return</button>
+  </div>
+</div>
+
+<!-- LOG -->
+<div class="screen" id="s-log">
+  <div class="screen-scroll">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <h2>Flare log</h2>
+      <button class="btn" onclick="showScreen('s-log-add');prefillLogDate()"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>
+    </div>
+    <div id="log-list"></div>
+  </div>
+  <div class="ob-footer"><button class="btn btn-full" onclick="goHome()"><i class="ti ti-home" aria-hidden="true"></i> Home</button></div>
+</div>
+
+<!-- LOG ADD -->
+<div class="screen" id="s-log-add">
+  <div class="screen-scroll">
+    <h2 style="margin-bottom:0.25rem">Log a flare</h2>
+    <p style="margin-bottom:1.25rem">Track patterns over time, not individual reactions.</p>
+    <div class="field"><label>Date</label><input type="date" id="la-date"></div>
+    <div class="field">
+      <label>Severity (1 = very mild, 10 = severe)</label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="range" min="1" max="10" value="5" step="1" id="la-sev" oninput="document.getElementById('la-sev-out').textContent=this.value" style="flex:1">
+        <span id="la-sev-out" style="font-size:15px;font-weight:500;min-width:16px">5</span>
+      </div>
+    </div>
+    <div class="field"><label>Tier reached</label>
+      <select id="la-tier">
+        <option value="1">Tier 1 — Mild</option>
+        <option value="2">Tier 2 — Moderate</option>
+        <option value="3">Tier 3 — Severe</option>
+        <option value="4">Tier 4 — Anaphylaxis</option>
+      </select>
+    </div>
+    <div class="field"><label>Main symptoms</label><textarea id="la-syms" rows="2" placeholder="What did you notice? How did it progress?"></textarea></div>
+    <div class="field"><label>Possible triggers</label><input type="text" id="la-triggers" placeholder="What might have contributed?"></div>
+    <div class="field"><label>Medications taken</label><input type="text" id="la-meds" placeholder="What did you take and when?"></div>
+    <div class="field"><label>Notes</label><textarea id="la-notes" rows="2" placeholder="Patterns? What would you do differently?"></textarea></div>
+  </div>
+  <div class="ob-footer">
+    <button class="btn" onclick="showScreen('s-log')">Cancel</button>
+    <button class="btn btn-primary" style="flex:1" onclick="saveLogEntry()">Save entry</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="s-settings">
+  <div class="screen-scroll">
+    <h2 style="margin-bottom:1.25rem">Settings</h2>
+    <div class="section-label" style="margin-top:0">Demo / onboarding</div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem;border-color:#9FE1CB" onclick="showWelcomeDemo()">
+      <div style="display:flex;align-items:center;gap:10px">
+        <i class="ti ti-presentation" style="font-size:18px;color:#0F6E56" aria-hidden="true"></i>
+        <div><div style="font-size:14px;color:#085041;font-weight:500">Show welcome screen</div><div style="font-size:12px;color:var(--color-text-secondary)">Returns to the start — your data is preserved</div></div>
+      </div>
+    </div>
+    <div class="section-label">Edit my information</div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-ob1');loadOb1()"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-radar-2" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Pre-flare signals</span></div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-ob2');loadOb2()"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-flame" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Trigger map</span></div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-ob3');loadOb3()"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-pill" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Medications</span></div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-ob4');loadOb4()"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-first-aid-kit" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Emergency information</span></div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:0.5rem" onclick="showScreen('s-provider');loadProvider()"><div style="display:flex;align-items:center;gap:10px"><i class="ti ti-stethoscope" style="font-size:18px;color:#1A7A8A" aria-hidden="true"></i><span style="font-size:14px">Provider completion mode</span></div></div>
+    <div class="section-label">Context</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem">
+      <button class="btn" id="set-adult" onclick="setContext('adult');save();updateSettings()">Adult patient</button>
+      <button class="btn" id="set-care" onclick="setContext('caregiver');save();updateSettings()">Caregiver</button>
+    </div>
+    <hr class="divider">
+    <button class="btn btn-full" onclick="if(confirm('Reset all data? This cannot be undone.'))resetAll()" style="color:var(--color-text-secondary);font-size:13px"><i class="ti ti-trash" aria-hidden="true"></i> Reset all data</button>
+  </div>
+  <div class="ob-footer"><button class="btn btn-full" onclick="goHome()"><i class="ti ti-home" aria-hidden="true"></i> Home</button></div>
+</div>
+
+</div>
+
+<script>
+const K='mcas_v2';
+let D={};
+let navStack=[];
+let currentScreen='s-welcome';
+let currentSection='';
+let demoMode=false;
+
+function load(){
+  try{const raw=localStorage.getItem(K);if(raw)D=JSON.parse(raw);}catch(e){D={};}
+}
+function save(){
+  try{localStorage.setItem(K,JSON.stringify(D));}catch(e){}
+}
+
+function showScreen(id){
+  if(currentScreen!==id)navStack.push(currentScreen);
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const s=document.getElementById(id);
+  s.classList.add('active');s.style.display='flex';
+  currentScreen=id;
+  const noTop=['s-welcome','s-home'];
+  document.getElementById('top-bar').style.display=noTop.includes(id)?'none':'flex';
+  const titles={'s-ob1':'Pre-flare signals','s-ob2':'Trigger map','s-ob3':'Medications','s-ob4':'Emergency info','s-ob5':'Setup complete','s-flare':'Flare response','s-section':'My protocol','s-provider':'Provider mode','s-log':'Flare log','s-log-add':'Log entry','s-settings':'Settings'};
+  document.getElementById('top-title').textContent=titles[id]||'MCAS Flare Guide';
+  if(id==='s-home')updateHome();
+  if(id==='s-log')renderLog();
+  if(id==='s-settings')updateSettings();
+  window.scrollTo(0,0);
+}
+function goBack(){const prev=navStack.pop();if(prev&&prev!==currentScreen)showScreen(prev);else goHome();}
+function goHome(){navStack=[];showScreen('s-home');}
+
+function showWelcomeDemo(){
+  demoMode=true;
+  document.getElementById('demo-bar').style.display='flex';
+  navStack=[];showScreen('s-welcome');
+  if(D.context)highlightContext(D.context);
+}
+function exitDemo(){
+  demoMode=false;
+  document.getElementById('demo-bar').style.display='none';
+  goHome();
+}
+
+function highlightContext(ctx){
+  document.getElementById('ctx-adult').className='btn btn-full ctx-btn'+(ctx==='adult'?' selected':'');
+  document.getElementById('ctx-care').className='btn btn-full ctx-btn'+(ctx==='caregiver'?' selected':'');
+  document.getElementById('ctx-adult').style.cssText+=(ctx==='adult'?';padding:14px;flex-direction:column;gap:6px;border-radius:var(--border-radius-lg)':';padding:14px;flex-direction:column;gap:6px;border-radius:var(--border-radius-lg)');
+}
+function setContext(ctx){
+  D.context=ctx;
+  highlightContext(ctx);
+  const isAdult=ctx!=='caregiver';
+  const lm=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
+  lm('ob1-title',isAdult?'Your pre-flare pattern':"Your child's pre-flare pattern");
+  lm('ob1-sub',isAdult?'These are the signs your body gives before a full flare. Learning your personal pattern is one of the most powerful things you can do.':"These are the signs your child shows before a full flare. Learning their pattern helps you catch it early.");
+  lm('lb-earliest',isAdult?'My earliest warning signs are usually':"My child's earliest warning signs are usually");
+  lm('lb-canary',isAdult?"My single most reliable first signal":"Their single most reliable first signal");
+  lm('lb-context',isAdult?'I notice these signals most often when':'These signals tend to appear');
+  lm('lb-firstdo',isAdult?'When I notice these signals, I first':'When I see these signals, I first');
+  lm('lb-name',isAdult?'My name':"Patient's name");
+  lm('lb-dob',isAdult?'Date of birth':"Patient's date of birth");
+}
+function startOnboarding(){showScreen('s-ob1');loadOb1();}
+
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function sv(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
+
+function saveOb1(){D.signals={earliest:v('f-earliest'),canary:v('f-canary'),context:v('f-context'),firstdo:v('f-firstdo')};save();showScreen('s-ob2');loadOb2();}
+function loadOb1(){const s=D.signals||{};sv('f-earliest',s.earliest);sv('f-canary',s.canary);sv('f-context',s.context);sv('f-firstdo',s.firstdo);if(D.context)setContext(D.context);}
+function saveOb2(){D.triggers={food_c:v('f-food-c'),food_s:v('f-food-s'),chem:v('f-chem'),phys:v('f-phys'),bio:v('f-bio'),stress:v('f-stress'),stack:v('f-stack')};save();showScreen('s-ob3');loadOb3();}
+function loadOb2(){const t=D.triggers||{};sv('f-food-c',t.food_c);sv('f-food-s',t.food_s);sv('f-chem',t.chem);sv('f-phys',t.phys);sv('f-bio',t.bio);sv('f-stress',t.stress);sv('f-stack',t.stack);}
+function saveOb3(){D.meds={t1signs:v('f-t1-signs'),t1m1:v('f-t1-m1'),t1m2:v('f-t1-m2'),t1other:v('f-t1-other'),t2signs:v('f-t2-signs'),t2m1:v('f-t2-m1'),t2m2:v('f-t2-m2'),t2esc:v('f-t2-esc')};save();showScreen('s-ob4');loadOb4();}
+function loadOb3(){const m=D.meds||{};sv('f-t1-signs',m.t1signs);sv('f-t1-m1',m.t1m1);sv('f-t1-m2',m.t1m2);sv('f-t1-other',m.t1other);sv('f-t2-signs',m.t2signs);sv('f-t2-m1',m.t2m1);sv('f-t2-m2',m.t2m2);sv('f-t2-esc',m.t2esc);}
+function saveOb4(){D.emergency={epi_device:v('f-epi-device'),epi_loc:v('f-epi-loc'),epi_exp:v('f-epi-exp'),epi_loc2:v('f-epi-loc2'),ec1name:v('f-ec1-name'),ec1phone:v('f-ec1-phone'),ec2name:v('f-ec2-name'),ec2phone:v('f-ec2-phone'),er:v('f-er'),er_notes:v('f-er-notes'),name:v('f-name'),dob:v('f-dob')};save();showScreen('s-ob5');}
+function loadOb4(){const e=D.emergency||{};sv('f-epi-device',e.epi_device);sv('f-epi-loc',e.epi_loc);sv('f-epi-exp',e.epi_exp);sv('f-epi-loc2',e.epi_loc2);sv('f-ec1-name',e.ec1name);sv('f-ec1-phone',e.ec1phone);sv('f-ec2-name',e.ec2name);sv('f-ec2-phone',e.ec2phone);sv('f-er',e.er);sv('f-er-notes',e.er_notes);sv('f-name',e.name);sv('f-dob',e.dob);}
+function loadProvider(){const p=D.provider||{};sv('pf-t1-m1',p.t1m1||D.meds?.t1m1);sv('pf-t1-m2',p.t1m2||D.meds?.t1m2);sv('pf-t2-m1',p.t2m1||D.meds?.t2m1);sv('pf-t2-m2',p.t2m2||D.meds?.t2m2);sv('pf-t1-thresh',p.thresh);sv('pf-epi',p.epi||D.emergency?.epi_device);sv('pf-notes',p.notes);sv('pf-provider',p.provider_name);}
+function saveProvider(){D.provider={t1m1:v('pf-t1-m1'),t1m2:v('pf-t1-m2'),t2m1:v('pf-t2-m1'),t2m2:v('pf-t2-m2'),thresh:v('pf-t1-thresh'),epi:v('pf-epi'),notes:v('pf-notes'),provider_name:v('pf-provider'),completed:true};save();goHome();}
+
+function completion(){let f=0,t=4;if(D.signals?.earliest||D.signals?.canary)f++;if(D.triggers?.food_c||D.triggers?.chem)f++;if(D.meds?.t1signs||D.meds?.t1m1)f++;if(D.emergency?.ec1name||D.emergency?.er)f++;return Math.round((f/t)*100);}
+function chip(has){return has?'complete-chip chip-done':'complete-chip chip-todo';}
+function chipTxt(has){return has?'✓ Done':'Add info';}
+
+function updateHome(){
+  const isAdult=(D.context||'adult')!=='caregiver';
+  document.getElementById('home-greeting').textContent=isAdult?'Your personalized flare guide':"Your child's personalized flare guide";
+  const nm=D.emergency?.name;
+  document.getElementById('home-name').textContent=nm?nm+"'s guide":'My MCAS guide';
+  document.getElementById('sc-pct').textContent=completion()+'%';
+  document.getElementById('sc-logcount').textContent=(D.logs||[]).length;
+  document.getElementById('provider-banner').style.display=D.provider?.completed?'none':'';
+  const s=D.signals,t=D.triggers,e=D.emergency;
+  const cs=document.getElementById('chip-signals');cs.className=chip(s?.earliest||s?.canary);cs.textContent=chipTxt(s?.earliest||s?.canary);
+  const ct=document.getElementById('chip-triggers');ct.className=chip(t?.food_c||t?.chem);ct.textContent=chipTxt(t?.food_c||t?.chem);
+  const ce=document.getElementById('chip-emer');ce.className=chip(e?.ec1name||e?.er);ce.textContent=chipTxt(e?.ec1name||e?.er);
+}
+function updateSettings(){
+  const isAdult=(D.context||'adult')!=='caregiver';
+  document.getElementById('set-adult').style.borderColor=isAdult?'#1A7A8A':'';
+  document.getElementById('set-care').style.borderColor=!isAdult?'#1A7A8A':'';
+}
+
+function setFlareTab(tier){
+  ['t1','t2','t3','t4'].forEach(t=>{const b=document.getElementById('tb-'+t);b.className='tier-btn';if(t===tier)b.classList.add('active-'+t);});
+  renderTier(tier);
+}
+function row(dot,html){return`<div class="check-item"><div class="check-dot dot-${dot}"></div><span>${html}</span></div>`;}
+function mrow(label,val,fallback){return val?`<div class="mline"><span class="mline-label">${label}: </span><strong>${val}</strong></div>`:`<div class="mline"><span class="mline-label">${label}: </span><em style="color:var(--color-text-secondary)">${fallback}</em></div>`;}
+
+function renderTier(tier){
+  const m=D.meds||{},p=D.provider||{},e=D.emergency||{};
+  const isAdult=(D.context||'adult')!=='caregiver';
+  const your=isAdult?'your':"your child's";
+  const they=isAdult?'you':"your child";
+  let html='';
+  if(tier==='t1'){
+    html=`<div class="tier-header t1-header"><h2>Tier 1 — Mild flare</h2><p>Respond early. The cost of acting on nothing is low. The cost of waiting is high.</p></div>`;
+    html+=`<h3 style="margin-bottom:8px">${isAdult?'Your':'Your child\'s'} Tier 1 signals</h3>`;
+    if(m.t1signs)html+=`<div class="card" style="margin-bottom:1rem"><p style="font-size:14px;color:var(--color-text-primary)">${m.t1signs}</p></div>`;
+    else{html+=`<div class="card" style="margin-bottom:1rem">`;['Mild itching, flushing, or hives in one area','Early nausea or stomach change','Brain fog arriving, mild headache','Pre-flare signals present'].forEach(x=>html+=row('green',x));html+='</div>';}
+    html+=`<h3 style="margin-bottom:8px">Action</h3><div class="card" style="margin-bottom:1rem">`;
+    const t1m1=p.t1m1||m.t1m1,t1m2=p.t1m2||m.t1m2;
+    if(t1m1)html+=row('green',`Take ${t1m1}`);else html+=row('green','Take scheduled H1 antihistamine if not yet taken');
+    if(t1m2)html+=row('green',`Take ${t1m2}`);else html+=row('green','Take H2 antihistamine (e.g. famotidine)');
+    if(m.t1other)html+=row('green',m.t1other);
+    html+=row('green','Remove yourself from any identifiable trigger');
+    html+=row('green','Cool, calm environment — rest, hydrate, low stimulation');
+    html+=row('green','Note time and possible triggers');
+    html+='</div>';
+    const thresh=p.thresh||'30–60 minutes';
+    html+=`<button class="escalate-btn esc-t2" onclick="setFlareTab('t2')"><span>Not improving after ${thresh}</span><i class="ti ti-arrow-right" aria-hidden="true"></i></button>`;
+  } else if(tier==='t2'){
+    html=`<div class="tier-header t2-header"><h2>Tier 2 — Moderate flare</h2><p>Escalate. Have someone with ${they} if possible.</p></div>`;
+    html+=`<h3 style="margin-bottom:8px">Tier 2 signals</h3>`;
+    if(m.t2signs)html+=`<div class="card" style="margin-bottom:1rem"><p style="font-size:14px;color:var(--color-text-primary)">${m.t2signs}</p></div>`;
+    else{html+=`<div class="card" style="margin-bottom:1rem">`;['Hives spreading; angioedema (not throat)','Significant cramping, vomiting','Moderate wheezing — still speaking in full sentences','Heart racing; lightheaded on standing','Significant brain fog or confusion'].forEach(x=>html+=row('amber',x));html+='</div>';}
+    html+=`<h3 style="margin-bottom:8px">Action</h3><div class="card" style="margin-bottom:1rem">`;
+    const t2m1=p.t2m1||m.t2m1,t2m2=p.t2m2||m.t2m2;
+    if(t2m1)html+=row('amber',`Add rescue dose: ${t2m1}`);else html+=row('amber','Add rescue H1 antihistamine dose now');
+    if(t2m2)html+=row('amber',`Steroid: ${t2m2}`);else html+=row('amber','Consider oral steroid if prescribed for moderate rescue');
+    html+=row('amber',`Lie down, elevate ${your} legs slightly`);
+    html+=row('amber','Do not eat or add new substances until clearly improving');
+    html+=row('amber','Have someone with you if possible — let someone know');
+    html+='</div>';
+    const esc=m.t2esc||'throat tightness, tongue swelling, or blood pressure drop';
+    html+=`<div class="warn-box"><strong>Watch for:</strong> ${esc} → move to Tier 3 immediately</div>`;
+    html+=`<button class="escalate-btn esc-t3" onclick="setFlareTab('t3')"><span>Symptoms escalating — move to Tier 3</span><i class="ti ti-arrow-right" aria-hidden="true"></i></button>`;
+  } else if(tier==='t3'){
+    html=`<div class="tier-header t3-header"><h2>Tier 3 — Severe</h2><p>This is serious. Act now. Call someone.</p></div>`;
+    html+=`<h3 style="margin-bottom:8px">Tier 3 criteria</h3><div class="card" style="margin-bottom:1rem">`;
+    ['Cannot complete a sentence without stopping','SpO₂ ≤ 93% / significant breathing difficulty','Heart rate > 120 at rest','Blood pressure dropping — near-faint, severe dizziness','Throat tightness, stridor, tongue or throat swelling','Rapid escalation not slowing'].forEach(x=>html+=row('coral',x));
+    html+='</div>';
+    html+=`<h3 style="margin-bottom:8px">Action — now</h3><div class="card" style="margin-bottom:1rem">`;
+    const epi=p.epi||e.epi_device;
+    if(epi)html+=row('coral',`<strong>Use epinephrine NOW: ${epi}</strong> — outer thigh, through clothing if needed, do not wait`);
+    else html+=row('coral','<strong>Use epinephrine auto-injector NOW</strong> — outer thigh, through clothing if needed');
+    html+=row('coral','<strong>Call 911</strong> immediately');
+    html+=row('coral','Lie flat — unless breathing is easier upright');
+    html+=row('coral','Tell EMS: MCAS reaction — needs epinephrine, IV fluids, steroids if needed');
+    html+=row('coral','Go to ER regardless of whether symptoms improve');
+    html+='</div>';
+    if(e.epi_loc)html+=`<div class="info-box"><i class="ti ti-map-pin" aria-hidden="true"></i> <strong>Epinephrine is at: ${e.epi_loc}</strong></div>`;
+    html+=`<button class="escalate-btn esc-t4" onclick="setFlareTab('t4')"><span>Airway closing, collapse, or loss of consciousness</span><i class="ti ti-arrow-right" aria-hidden="true"></i></button>`;
+  } else if(tier==='t4'){
+    html=`<div class="tier-header t4-header"><h2>Tier 4 — Anaphylaxis</h2><p>No decisions. Act. This is the algorithm.</p></div>`;
+    html+=`<div class="card card-red" style="margin-bottom:1rem">`;
+    ['Throat closing or severe difficulty breathing','Tongue or throat swelling','Collapse or loss of consciousness','Any of the above — this is Tier 4'].forEach(x=>html+=row('red',x));
+    html+='</div>';
+    html+=`<h3 style="margin-bottom:8px">Algorithm — in order</h3><div class="card" style="margin-bottom:1rem">`;
+    const epi2=p.epi||e.epi_device||'0.3mg adult / 0.15mg under 30kg / 0.1mg under 15kg';
+    html+=row('red',`<strong>1. Epinephrine now:</strong> ${epi2} — outer thigh, through clothing`);
+    html+=row('red','<strong>2. Call 911.</strong> Say: "I am having anaphylaxis"');
+    html+=row('red','3. Lie flat, elevate legs (unless breathing easier upright)');
+    html+=row('red','4. Second dose in 5–15 min if not improving and second device available');
+    html+=row('red','5. Go to ER — even if completely better. Biphasic reaction can occur 1–72 hours later');
+    html+='</div>';
+    if(e.ec1name||e.ec2name||e.er){
+      html+=`<h3 style="margin-bottom:8px">Emergency contacts</h3><div class="card" style="margin-bottom:1rem">`;
+      if(e.ec1name)html+=`<div class="emer-item"><i class="ti ti-phone" style="font-size:18px;color:var(--color-text-secondary)" aria-hidden="true"></i><span class="emer-label">${e.ec1name}</span><strong>${e.ec1phone||'—'}</strong></div>`;
+      if(e.ec2name)html+=`<div class="emer-item"><i class="ti ti-phone" style="font-size:18px;color:var(--color-text-secondary)" aria-hidden="true"></i><span class="emer-label">${e.ec2name}</span><strong>${e.ec2phone||'—'}</strong></div>`;
+      if(e.er)html+=`<div class="emer-item"><i class="ti ti-building-hospital" style="font-size:18px;color:var(--color-text-secondary)" aria-hidden="true"></i><span class="emer-label">Preferred ER</span><span style="font-size:13px">${e.er}</span></div>`;
+      html+='</div>';
+    }
+    if(e.epi_loc2)html+=`<div class="info-box"><strong>Second device: </strong>${e.epi_loc2}</div>`;
+    html+=`<div class="warn-box" style="font-size:13px"><strong>Always go to the ER after using epinephrine</strong> — even when symptoms resolve. Biphasic anaphylaxis can occur hours later. Minimum 4–6 hours observation.</div>`;
+  }
+  document.getElementById('flare-content').innerHTML=html;
+}
+
+function showSection(which){
+  currentSection=which;
+  const m=D.meds||{},t=D.triggers||{},s=D.signals||{},e=D.emergency||{};
+  let html='';
+  if(which==='signals'){
+    html=`<h2 style="margin-bottom:1rem">Pre-flare signals</h2>`;
+    html+=mrow('Earliest warning signs',s.earliest,'Not yet filled in');
+    html+=mrow('Canary signal',s.canary,'Not yet filled in');
+    html+=mrow('When they appear',s.context,'Not yet filled in');
+    html+=mrow('First action',s.firstdo,'Not yet filled in');
+  } else if(which==='triggers'){
+    html=`<h2 style="margin-bottom:1rem">Trigger map</h2>`;
+    html+=`<h3 style="margin:1rem 0 6px">Food / ingested</h3>`;
+    html+=mrow('Confirmed',t.food_c,'Not yet filled in');
+    html+=mrow('Suspected',t.food_s,'Not yet filled in');
+    html+=`<h3 style="margin:1rem 0 6px">Chemical / environmental</h3>`;
+    html+=mrow('Triggers',t.chem,'Not yet filled in');
+    html+=`<h3 style="margin:1rem 0 6px">Other triggers</h3>`;
+    html+=mrow('Physical',t.phys,'Not yet filled in');
+    html+=mrow('Biological / hormonal',t.bio,'Not yet filled in');
+    html+=mrow('Stress / autonomic',t.stress,'Not yet filled in');
+    html+=`<h3 style="margin:1rem 0 6px">Stacking combination</h3>`;
+    html+=mrow('My highest-load pattern',t.stack,'Not yet filled in');
+  } else if(which==='emergency'){
+    html=`<h2 style="margin-bottom:1rem">Emergency information</h2>`;
+    html+=mrow('Patient',e.name,'Not yet filled in');
+    html+=mrow('Date of birth',e.dob,'—');
+    html+=`<h3 style="margin:1rem 0 6px">Epinephrine</h3>`;
+    html+=mrow('Device',e.epi_device,'Not yet filled in');
+    html+=mrow('Location',e.epi_loc,'Not yet filled in');
+    html+=mrow('Expiration',e.epi_exp,'Not yet filled in');
+    html+=mrow('Second device',e.epi_loc2,'Not yet filled in');
+    html+=`<h3 style="margin:1rem 0 6px">Emergency contacts</h3>`;
+    html+=mrow(e.ec1name||'Contact 1',e.ec1phone,'Not yet filled in');
+    html+=mrow(e.ec2name||'Contact 2',e.ec2phone,'Not yet filled in');
+    html+=mrow('Preferred ER',e.er,'Not yet filled in');
+    html+=mrow('Notes for ER',e.er_notes,'None added');
+  }
+  document.getElementById('section-content').innerHTML=html;
+  showScreen('s-section');
+}
+function editSection(){
+  const map={signals:'s-ob1',triggers:'s-ob2',emergency:'s-ob4'};
+  const loaders={signals:loadOb1,triggers:loadOb2,emergency:loadOb4};
+  if(map[currentSection]){showScreen(map[currentSection]);if(loaders[currentSection])loaders[currentSection]();}
+}
+
+function prefillLogDate(){document.getElementById('la-date').value=new Date().toISOString().split('T')[0];}
+function renderLog(){
+  const logs=D.logs||[];
+  if(!logs.length){document.getElementById('log-list').innerHTML=`<p style="color:var(--color-text-secondary);font-size:14px;text-align:center;padding:2rem 0">No entries yet. Log your first flare to start tracking patterns.</p>`;return;}
+  const sorted=[...logs].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const tc=['','green','amber','coral','red'];
+  let html='';
+  sorted.forEach(l=>{
+    const dots=Array.from({length:10},(_,i)=>`<div class="sev-dot${i<l.sev?' filled':''}"></div>`).join('');
+    html+=`<div class="log-entry"><div style="display:flex;justify-content:space-between;align-items:center"><strong style="font-size:14px">${l.date}</strong><span class="pill pill-${tc[l.tier]||'teal'}">Tier ${l.tier}</span></div><div class="sev-bar" style="margin:4px 0">${dots}</div>`;
+    if(l.syms)html+=`<div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px">${l.syms}</div>`;
+    if(l.triggers)html+=`<div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px">Possible triggers: ${l.triggers}</div>`;
+    html+='</div>';
+  });
+  document.getElementById('log-list').innerHTML=html;
+}
+function saveLogEntry(){
+  if(!D.logs)D.logs=[];
+  D.logs.push({date:v('la-date')||new Date().toISOString().split('T')[0],sev:parseInt(document.getElementById('la-sev').value)||5,tier:parseInt(document.getElementById('la-tier').value)||1,syms:v('la-syms'),triggers:v('la-triggers'),meds:v('la-meds'),notes:v('la-notes')});
+  save();showScreen('s-log');
+}
+function resetAll(){D={};save();navStack=[];demoMode=false;document.getElementById('demo-bar').style.display='none';showScreen('s-welcome');}
+
+function init(){
+  load();
+  if(D.emergency?.name||D.signals?.earliest){goHome();}
+  else{showScreen('s-welcome');}
+  if(D.context)setContext(D.context);
+  updateSettings();
+}
+init();
+</script>
+</body>
+</html>
